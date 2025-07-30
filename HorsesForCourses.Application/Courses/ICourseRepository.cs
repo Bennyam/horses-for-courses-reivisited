@@ -8,4 +8,5 @@ public interface ICourseRepository
   Course? GetById(Guid id);
   IEnumerable<Course> GetAll();
   void Save();
+  void ReplaceTimeslots(Guid courseId, List<Timeslot> newTimeslots);
 }

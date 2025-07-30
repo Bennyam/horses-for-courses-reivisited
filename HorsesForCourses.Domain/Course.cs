@@ -1,3 +1,5 @@
+using System.Dynamic;
+
 namespace HorsesForCourses.Domain;
 
 public class Course
@@ -14,7 +16,19 @@ public class Course
   public IReadOnlyCollection<string> RequiredSkills => _requiredSkills.AsReadOnly();
 
   public Coach? Coach { get; private set; }
+  public Guid? CoachId {get; private set; }
   public bool IsConfirmed { get; private set; }
+
+
+  private Course()
+  {
+    Id = Guid.NewGuid();
+    Name = string.Empty;
+    StartDate = DateOnly.MinValue;
+    EndDate = DateOnly.MinValue;
+    _requiredSkills = new();
+    _timeslots = new();
+  } // EF Core constructor
 
   public Course(string name, DateOnly startDate, DateOnly endDate)
   {

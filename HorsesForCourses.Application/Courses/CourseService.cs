@@ -38,19 +38,13 @@ public class CourseService : ICourseService
 
     public void UpdateTimeslots(Guid courseId, UpdateCourseTimeslotsDto dto)
     {
-        var course = GetOrThrow(courseId);
+        var newSlots = dto.Timeslots.Select(dtoSlot =>
+            new Timeslot(ParseDay(dtoSlot.Day), dtoSlot.Start, dtoSlot.End)
+        ).ToList();
 
-        foreach (var slot in course.Timeslots.ToList())
-            course.RemoveTimeslot(slot.Id);
-
-        foreach (var dtoSlot in dto.Timeslots)
-        {
-            var timeslot = new Timeslot(ParseDay(dtoSlot.Day), dtoSlot.Start, dtoSlot.End);
-            course.AddTimeslot(timeslot);
-        }
-
-        _repo.Save();
+        _repo.ReplaceTimeslots(courseId, newSlots);
     }
+
 
     public void Confirm(Guid courseId)
     {

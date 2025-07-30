@@ -2,6 +2,8 @@ using HorsesForCourses.Application.Coaches;
 using HorsesForCourses.Application.Courses;
 using HorsesForCourses.Infrastructure.Courses;
 using HorsesForCourses.Infrastructure.Coaches;
+using HorsesForCourses.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,8 +12,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddSingleton<ICourseRepository, InMemoryCourseRepository>();
-builder.Services.AddSingleton<ICoachRepository, InMemoryCoachRepository>();
+builder.Services.AddDbContext<HorsesForCoursesDbContext>(options =>
+    options.UseSqlite("Data Source=horses.db")); // SQLite-bestand
+
+builder.Services.AddScoped<ICourseRepository, EfCourseRepository>();
+builder.Services.AddScoped<ICoachRepository, EfCoachRepository>();
 builder.Services.AddScoped<ICourseService, CourseService>();
 builder.Services.AddScoped<ICoachService, CoachService>();
 

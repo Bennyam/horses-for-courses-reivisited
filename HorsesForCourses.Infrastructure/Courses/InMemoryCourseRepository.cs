@@ -24,6 +24,22 @@ public class InMemoryCourseRepository : ICourseRepository
 
     public void Save()
     {
-    // In-memory repository does not require saving
+        // In-memory repository does not require saving
+    }
+    
+    public void ReplaceTimeslots(Guid courseId, List<Timeslot> newTimeslots)
+    {
+        var course = GetById(courseId);
+        if (course is null) return;
+
+        foreach (var slot in course.Timeslots.ToList())
+        {
+            course.RemoveTimeslot(slot.Id);
+        }
+
+        foreach (var slot in newTimeslots)
+        {
+            course.AddTimeslot(slot);
+        }
     }
 }

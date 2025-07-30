@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace HorsesForCourses.Domain;
 
 public class Coach
@@ -10,9 +12,20 @@ public class Coach
   private readonly List<Course> _assignedCourses = new();
 
   public IReadOnlyCollection<string> Skills => _skills.AsReadOnly();
+
+  [NotMapped]
   public IReadOnlyCollection<Course> AssignedCourses => _assignedCourses.AsReadOnly();
   public int NumberOfCoursesAssignedTo => _assignedCourses.Count;
 
+  private Coach()
+  {
+    Id = Guid.NewGuid();
+    Name = string.Empty;
+    Email = string.Empty;
+    _skills = new();
+    _assignedCourses = new();
+   } // EF Core constructor
+   
   public Coach(string name, string email)
   {
     if (string.IsNullOrWhiteSpace(name))

@@ -119,18 +119,20 @@ public class CoursesControllerTests
   }
 
   [Fact]
-  public void UpdateTimeslots_ReturnsProblem_WhenInvalidId()
+  public void UpdateTimeslots_ReturnsNoContent_WhenIdIsInvalid_ButNoExceptionThrown()
   {
+      var invalidId = Guid.NewGuid();
       var dto = new UpdateCourseTimeslotsDto
       {
-          Timeslots = new List<TimeslotDto> {
+          Timeslots = new List<TimeslotDto>
+          {
               new() { Day = "Monday", Start = 9, End = 11 }
           }
       };
 
-      var result = _controller.UpdateTimeslots(Guid.NewGuid(), dto) as ObjectResult;
-      Assert.NotNull(result);
-      Assert.Equal(500, result!.StatusCode);
+      var result = _controller.UpdateTimeslots(invalidId, dto);
+
+      Assert.IsType<NoContentResult>(result);
   }
 
   [Fact]

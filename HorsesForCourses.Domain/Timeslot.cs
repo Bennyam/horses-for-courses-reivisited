@@ -3,10 +3,12 @@
 public class Timeslot
 {
   public Guid Id { get; private set; }
-  public DayOfWeek Day { get; }
-  public int StartHour { get; }
-  public int EndHour { get; }
+  public DayOfWeek Day { get; private set; }
+  public int StartHour { get; private set; }
+  public int EndHour { get; private set; }
+  public Guid CourseId { get; private set; }
 
+  private Timeslot() { } // EF Core constructor
   public Timeslot(DayOfWeek day, int startHour, int endHour)
   {
     if (day is DayOfWeek.Saturday or DayOfWeek.Sunday)
@@ -25,7 +27,7 @@ public class Timeslot
     Day = day;
     StartHour = startHour;
     EndHour = endHour;
-    
+
   }
 }
 
