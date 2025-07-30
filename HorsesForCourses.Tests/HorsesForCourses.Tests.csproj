@@ -22,6 +22,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\HorsesForCourses.Domain\HorsesForCourses.Domain.csproj" />
+    <ProjectReference Include="..\HorsesForCourses.Application\HorsesForCourses.Application.csproj" />
+    <ProjectReference Include="..\HorsesForCourses.Infrastructure\HorsesForCourses.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

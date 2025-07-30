@@ -1,0 +1,195 @@
+Wat is een course : 
+
+Heeft een naam.
+wordt ingepland over een bepaalde periode met een start- en einddatum.
+heeft vaste lesmomenten, bijvoorbeeld op maandag en woensdag van 10u tot 12u.
+heeft enkel les op weekdagen (maandag t.e.m. vrijdag).
+plant lessen uitsluitend binnen de kantooruren (tussen 9u00 en 17u00).
+moet in totaal minstens één uur duren.
+vereist een lijst van coach-competenties.
+wordt begeleid door exact één coach.
+is ongeldig zolang er geen lesmomenten zijn toegevoegd.
+kan pas een coach toegewezen krijgen nadat de opleiding als geldig en definitief is bevestigd.
+laat geen wijzigingen aan het lesrooster meer toe zodra een coach is toegewezen.
+
+
+wat is een coach: 
+
+beschikt over een lijst van vaardigheden (competenties).
+is slechts geschikt voor opleidingen waarvoor hij of zij alle vereiste competenties bezit.
+kan niet worden toegewezen aan overlappende opleidingen en moet dus beschikbaar zijn op de ingeplande momenten.
+
+
+de interactie van het domein:
+
+Coach registreren: maak een coach aan met naam en e-mailadres.
+Coach Competenties toevoegen/verwijderen
+Cursus aanmaken: maak een lege cursus aan met naam en periode.
+Cursus Competenties toevoegen/verwijderen
+Cursus Lesmomenten toevoegen/verwijderen (dag, beginuur, einduur).
+Cursus bevestigen: markeer de cursus als geldig en definitief, mits hij aan alle voorwaarden voldoet (inclusief minstens één lesmoment).
+Coach toewijzen: wijs een coach toe, enkel indien de cursus bevestigd is en de coach geschikt én beschikbaar is.
+
+
+de bedoeling is dus dat dit domein word gebouwd volgens de bepaalde regels, nadien word hier een webapi aan gekoppeld en ook entity framework
+
+Wat verwacht de API:
+
+Coach
+📄 POST /coaches
+Request:
+JSON body:
+{
+    "name": string,
+    "email": string
+}
+Response: Coach.Id:int
+📄 POST /coaches/{id}/skills
+Request:
+Url parameter: Id:int
+JSON body:
+{
+    // Volledige lijst van skills
+    //      voor de relevante Coach
+    "skills": [string] 
+}
+Response: Nothing
+📄 Get /coaches
+Request: Nothing
+Response:
+JSON body: string
+{   [{ 
+        "id": int, 
+        "name": string, 
+        "email": string,
+        "numberOfCoursesAssignedTo": int
+    }] 
+}
+📄 Get /coaches/{id}
+Request:
+Url parameter: Id:int
+Response:
+JSON body: string
+{ "id": int
+, "name": string
+, "email": string
+, "skills": [string]
+// list of courses this coach is assigned to
+//  mapped to { (course)id, (course)name } object
+, "courses": [{"id":int, "name": string}] 
+}
+Course
+📄 POST /courses
+Request:
+JSON body:
+{
+    "name": string,
+    "startDate": string(#yyyy-mm-dd#), 
+    "endDate": string(#yyyy-mm-dd#)
+}
+Response: Course.Id:int
+📄 POST /courses/{id}/skills
+Request:
+Url parameter: Id:int
+JSON body:
+{
+    // Volledige lijst van skills
+    //      voor de relevante Course
+    "skills": [string] 
+}
+Response: Nothing
+📄 POST /courses/{id}/timeslots
+Request:
+Url parameter: Id:int
+JSON body:
+{
+    // Volledige lijst van timeslots
+    //      voor de relevante Course
+    "timeslots": [
+        { "day": string
+        , "start": int // == hour
+        , "end": int   // == hour
+        }] 
+}
+Response: Nothing
+📄 POST /courses/{id}/confirm
+Request:
+Url parameter: Id:int
+Response: Nothing
+📄 POST /courses/{id}/assign-coach
+Request:
+Url parameter: Id:int
+JSON body:
+{
+    "coachId": int 
+}
+Response: Nothing
+📄 Get /courses
+Request: Nothing
+Response:
+JSON body: string
+{   [{ 
+        "id": int, 
+        "name": string,
+        "startDate": string(#yyyy-mm-dd#), 
+        "endDate": string(#yyyy-mm-dd#),
+        "hasSchedule": bool, // a.k.a, has timeslots/planning/...
+        "hasCoach": bool
+    }] 
+}
+📄 Get /courses/{id}
+Request:
+Url parameter: Id:int
+Response:
+JSON body: string
+{ "id": int
+, "name": string
+, "startDate": string(#yyyy-mm-dd#)
+, "endDate": string(#yyyy-mm-dd#)
+, "skills": [string]
+, "timeslots": [
+    { "day": string
+    , "start": int // == hour
+    , "end": int   // == hour
+    }] 
+, "coach": {"id":int, "name": string}
+}
+
+In de Web Api laag is het niet toegelaten om ook maar enige logica, met uitzondering van eventuele null-checks, terug te vinden. Dus geen loops, if's, switches, regex, ...
+
+De GET requests halen de entiteiten op uit je storage service (bvb repository) en geven deze aan een specifieke mapper class. Loops om bvb een lijst van Dto objecten om te zetten naar een domein entiteit, horen hier te zitten.
+
+nog een vereiste fouten worden weergegeven via problemdetails dus als Problem
+
+✅ Samenvatting vereisten tot nu toe:
+Onderdeel	Regel
+API Controllers	Alleen null-checks, geen logica of mapping
+Mapping	In aparte mapperklassen
+Foutafhandeling	Altijd via ProblemDetails
+Domein	Bevat alle businessregels
+Architectuur	Net gescheiden lagen, op basis van DDD
+
+🚀 Opbouwtraject project 'Coaches & Courses'
+🔹 Fase 1: Core + InMemory Repositories
+🧠 Domein volgens alle businessregels
+
+🧱 Interfaces voor ICoachRepository, ICourseRepository
+
+🧪 InMemoryRepository implementaties (voor snelle opstart en testbaarheid)
+
+🎯 Services/Handlers per use case
+
+🧼 Web API zonder logica, met mapping en ProblemDetails
+
+➡️ Doel: Alles werkend zonder database
+
+🔹 Fase 2: Overschakeling naar Entity Framework + SQLite
+🗂️ EF DbContext opzetten
+
+🗃️ SQLite database als opslag
+
+🔄 Repository-implementaties vervangen door EF-varianten
+
+⚠️ Behoud van interface (ICoachRepository, ICourseRepository) — geen wijzigingen nodig aan domein of API
+
+➡️ Doel: Zelfde functionaliteit met echte database
